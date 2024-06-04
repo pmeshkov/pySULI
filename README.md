@@ -5,6 +5,6 @@ Here are some stuff that I and my Science Undergraduate Laboratory Internship (S
 Students who contributed to this repo:
 
 2024-Summer:
-- Peter Meshkov (xxx)
+- Peter Meshkov (https://github.com/pmeshkov)
 - Kevin Morell (yyy)
 
