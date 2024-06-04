@@ -6,5 +6,5 @@ Students who contributed to this repo:
 
 2024-Summer:
 - Peter Meshkov (https://github.com/pmeshkov)
-- Kevin Morell (yyy)
+- Kevin Morell (https://github.com/KMorell)
 
