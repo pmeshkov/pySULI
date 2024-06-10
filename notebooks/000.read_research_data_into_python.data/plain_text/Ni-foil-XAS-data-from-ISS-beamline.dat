@@ -21,8 +21,6 @@
 # Facility.mode: Beam available
 # Facility.energy: 3 GeV
 # Facility.current: 400.35282595377504
-# Facility.GUP: 309417
-# Facility.SAF: 309313
 # Facility.cycle: 2022-2
 # Mono.name: Si(111)
 # Mono.d_spacing: 3.1354951
@@ -37,13 +35,9 @@
 # Sample.stage: ISS.giant_xy stage
 # ISS.sample_x_position: -22.8200122375
 # ISS.sample_y_position: -48.396793724
-# Scan.experimenters: Simerjeet Gill
 # Scan.edge_energy: 8333.0
 # Scan.start_time: 06/17/2022  09:37:49
 # Scan.end_time: 06/17/2022  09:38:24
-# Scan.duration: 00:35
-# Scan.transient_id: 241373
-# Scan.uid: ff23bfdd-8b4e-4d57-a010-82dd7c6b04a0
 # Scan.plot_hint: $5/$1
 # Column.1: energy eV
 # Column.2: i0

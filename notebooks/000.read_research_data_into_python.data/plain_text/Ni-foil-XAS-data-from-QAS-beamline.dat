@@ -2,11 +2,6 @@
 # Beamline: QAS
 # Year: 2019
 # Cycle: 1
-# SAF: 303680
-# PI: Sasaki
-# Proposal: 303277
-# Scan ID: 76399
-# UID: 64029776-9dce-4f7c-83ae-aa933484ce61
 # Comment: 
 # Trajectory name: nickel-8333.txt
 # Element: Nickel ( 28)
@@ -14,7 +9,6 @@
 # E0: 8333
 # Start time: 02/14/2019  14:41:38
 # Stop time: 02/14/2019  14:42:16
-# Total time: 00:38
 #
 # energy  i0  it  ir  pips  adc7  adc8
  8143.312310 1.024808e+00 4.090236e-01 3.097384e-01 9.767852e-01 7.329120e-05 2.643072e-05
