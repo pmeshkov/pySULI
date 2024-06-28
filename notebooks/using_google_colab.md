@@ -2,11 +2,11 @@
 
 **Colab** is a Jupyter Notebook service that allows you to work on `.ipynb` files through Google Drive. 
 
->A **Jupyter Notebook** is a document which allows for seamless integration of Python code with Markdown text formatting, to allow for an intuitive programming pipeline. It is organized in cells, with each cell containing either code or Markdown. The outputs of each code cell lay below the respective cell. Jupyter Notebook files are ideal for data analysis due to their presentability. Check out `/notebooks/Intro.ipynb` at https://jupyter.org/try-jupyter/lab/.
+>A **Jupyter Notebook** (file extension `.ipynb`) is a document which allows for seamless integration of Python code with Markdown text formatting, to allow for an intuitive programming pipeline. It is organized in cells, with each cell containing either code or Markdown. The outputs of each code cell lay below the respective cell. Also, the code is continuous from cell to cell; variables are accessible in all cells lower than their definition cell. Jupyter Notebook files are ideal for data analysis due to their presentability. Check out `/notebooks/Intro.ipynb` at https://jupyter.org/try-jupyter/lab/.
 
 # Installation
 
-To get started with colab, head to Google Drive, and select `New` ,  `More`, `Connect More Apps`.
+To get started with colab, head to Google Drive, and select `New`, `More`, `Connect More Apps`.
 
 ![enter image description here](https://github.com/pmeshkov/Colab_Tutorial/blob/main/Google_colab_tutorial/Screenshot%202024-06-27%20at%2010.46.41%E2%80%AFAM.png?raw=true)
 
@@ -29,11 +29,11 @@ Select `+ Code` to add a runnable Python cell. Select `+ Text` to add a Markdown
 
 # Unique Features
 
-We can use Bash commands directly in the code cells, by typing `!` before a command. You can install Python libraries with `!pip install [library]`.
+You can call Bash commands directly in the code cells, by typing `!` before a command. Install Python libraries with `!pip install [library]`.
 
 ![enter image description here](https://github.com/pmeshkov/Colab_Tutorial/blob/main/Google_colab_tutorial/Screenshot%202024-06-27%20at%2011.41.53%E2%80%AFAM.png?raw=true)
 
-Google Colab also offers generative AI helper features. To use them, you need to check the consent box, which you can find by selecting `Tools` and then `Setting`. 
+Google Colab also offers generative AI helper features. To use them, you need to check the consent box, which you can find by selecting `Tools` and then `Settings`. 
 
  ![enter image description here](https://github.com/pmeshkov/Colab_Tutorial/blob/main/Google_colab_tutorial/Screenshot%202024-06-27%20at%2011.49.50%E2%80%AFAM.png?raw=true)
 
@@ -51,7 +51,7 @@ Finally, let's talk about importing files from Google Drive. Before you begin to
 
 `drive.mount(/content/drive)`
 
-And then allow the notebook to access your drive.
+And then you need to allow the notebook to access your drive.
 
 ![enter image description here](https://github.com/pmeshkov/Colab_Tutorial/blob/main/Google_colab_tutorial/Screenshot%202024-06-27%20at%2012.56.57%E2%80%AFPM.png?raw=true)
 
@@ -61,7 +61,7 @@ Once connected, you can navigate your Google Drive directories using:
 
 `os.chdir(' [path to you dir] ')`
 
-In the same way that you would navigate directories in terminal. Now you can load and utilize files just as you would using Python elsewhere.
+The `os.chdir()` command operates the same way that the `cd` command (unix, windows, or macOS) would navigate directories in terminal. Now you can load and utilize files just as you would using Python elsewhere.
 
 ![enter image description here](https://github.com/pmeshkov/Colab_Tutorial/blob/main/Google_colab_tutorial/Screenshot%202024-06-27%20at%2012.58.03%E2%80%AFPM.png?raw=true)
 
