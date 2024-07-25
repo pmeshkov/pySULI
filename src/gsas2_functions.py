@@ -1326,30 +1326,38 @@ class seqRefiner:
 
         plt.show()
     
-    def plot_cov_matrix(self, clearplt=False):
+    def plot_corr_matrix(self, clearplt=False):
         """
         Plot the covariance matrix, converted into a pdf using the softmax function. Warning; this was rushed. I don't understand why the matrix isn't symmetric, but the lit up values seem to correspond to the highly correlated variables. This may be useful for understanding why certain variables are highly correlated, and to prevent erroneously low Rwp and GOF values.
 
         Args:
             clearplt (bool, optional): toggle for clearing the plots; useful if using something like %matplotlib widget in jupyter nb, and plots are being overwritted by other plots, which is an occasional glitch. Note, when true this will allow just one plot to be shown in the document at once, but with no overwritting. Defaults to False.
         """
-        def softmax(array):
-            partition_func = sum(np.exp(-array))
-            return np.exp(-array) / partition_func
         import seaborn as sns
+        
+        covmat = np.array(self.gpx['Covariance']['data']['covMatrix'])
+
+        sig = np.array(self.gpx['Covariance']['data']['sig'])
+        cor_denom =  np.outer(sig, sig)
 
         labels = self.gpx['Covariance']['data']['varyList']
-        cov_matrix = softmax(np.array(self.gpx['Covariance']['data']['covMatrix']))#gpx['Covariance']['data']['covMatrix']
+        corr_matrix = np.multiply(covmat, 1.0/cor_denom)
+        
+        for i,row in enumerate(corr_matrix):
+            for j,elem in enumerate(row):
+                if elem > 1 or elem < -1:
+                    cor_denom[i][j]=0
+                    
         # Clear any existing plots
         if clearplt:
             plt.clf()
 
         # Create the heatmap
         plt.figure(figsize=(10, 8))
-        ax = sns.heatmap(cov_matrix, annot=False, fmt=".2f", xticklabels=labels, yticklabels=labels, cmap='viridis', linewidths=1, linecolor='black')
+        ax = sns.heatmap(corr_matrix, annot=False, fmt=".2f", xticklabels=labels, yticklabels=labels, cmap='viridis', linewidths=1, linecolor='black')
 
 
-        plt.title('Covariance Matrix Heatmap with Softmax Normalization')
+        plt.title('Correlation Matrix Heatmap')
         plt.show()
     
     def tmp_delete(self, mode='tree'):
