@@ -316,7 +316,9 @@ class Refiner:
         X, Yobs, Ycalc, Ybkg= self.ds['X_in_q'].values, self.ds['Y_obs'].values, self.ds['Y_calc'].values, (self.ds['Y_bkg_auto']+self.ds['Y_bkg_gsas']).values
         return X, Yobs, Ycalc, Ybkg
 
-    def plot_refinement_results(self, plt_range=None):
+    def plot_refinement_results(self, plt_range=None, clearplt=False):
+        if clearplt:
+            plt.clf()
         
         # if x-axis range isn't given, just use original q_range
         if plt_range is None:
@@ -422,6 +424,40 @@ class Refiner:
         # ensuring 2nd and 4th plots only have x-axis ticks
         for ax in ["Y", "D"]:
             ax_dict[ax].xaxis.set_tick_params(which='both', labelbottom=True)
+
+    def plot_corr_matrix(self, clearplt=False):
+        """
+        Plot the correlation matrix of the most recently refined variables as a heatmap. It is best to run this method after each refinement, to see highly correlated variables, and try to reduce their high correlations, for a more honest fit.
+
+        Args:
+            clearplt (bool, optional): toggle for clearing the plots; useful if using something like %matplotlib widget in jupyter nb, and plots are being overwritted by other plots, which is an occasional glitch. Note, when true this will allow just one plot to be shown in the document at once, but with no overwritting. Defaults to False.
+        """
+        import seaborn as sns
+        
+        covmat = np.array(self.gpx['Covariance']['data']['covMatrix'])
+
+        sig = np.array(self.gpx['Covariance']['data']['sig'])
+        cor_denom =  np.outer(sig, sig)
+
+        labels = self.gpx['Covariance']['data']['varyList']
+        corr_matrix = np.multiply(covmat, 1.0/cor_denom)
+        
+        for i,row in enumerate(corr_matrix):
+            for j,elem in enumerate(row):
+                if elem > 1 or elem < -1:
+                    cor_denom[i][j]=0
+                    
+        # Clear any existing plots
+        if clearplt:
+            plt.clf()
+
+        # Create the heatmap
+        plt.figure(figsize=(10, 8))
+        ax = sns.heatmap(corr_matrix, annot=False, fmt=".2f", xticklabels=labels, yticklabels=labels, cmap='viridis', linewidths=1, linecolor='black')
+
+
+        plt.title('Correlation Matrix Heatmap')
+        plt.show()
             
     def tmp_delete(self, mode='file'):
         """
@@ -1328,7 +1364,7 @@ class seqRefiner:
     
     def plot_corr_matrix(self, clearplt=False):
         """
-        Plot the covariance matrix, converted into a pdf using the softmax function. Warning; this was rushed. I don't understand why the matrix isn't symmetric, but the lit up values seem to correspond to the highly correlated variables. This may be useful for understanding why certain variables are highly correlated, and to prevent erroneously low Rwp and GOF values.
+        Plot the correlation matrix of the most recently refined variables as a heatmap. It is best to run this method after each refinement, to see highly correlated variables, and try to reduce their high correlations, for a more honest fit.
 
         Args:
             clearplt (bool, optional): toggle for clearing the plots; useful if using something like %matplotlib widget in jupyter nb, and plots are being overwritted by other plots, which is an occasional glitch. Note, when true this will allow just one plot to be shown in the document at once, but with no overwritting. Defaults to False.
@@ -1644,13 +1680,3 @@ class seqRefiner:
             except:
                 print('\n\n\nSize broadening is refined: Rwp=%.3f'%(rwp_new))
                 print('Parameters', inst_pars_to_refine, 'were refined.\n\n\n')
-            
-    def fix_parameter(self, parameters = ['X']):
-        """THIS METHOD DOES NOT WORK RIGHT NOW.
-
-        Args:
-            parameters (list, optional): _description_. Defaults to ['X'].
-        """
-        for hist in self.gpx.histograms():
-                for par in parameters:
-                    hist.set_refinable(par, fixed=True) 
