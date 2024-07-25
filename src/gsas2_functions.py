@@ -562,7 +562,8 @@ class Refiner:
 
     def refine_background(self,num_coeffs):
         """
-        Refines background. Increased coeffs generates closer fit.
+        Refines background. Increased coeffs generates tighter fit. However, overfitting by adding too many variables fits the
+        curve to noise and unwanted information.
         
         Args:
             num_coeffs (int): number of coefficients used in refinement
