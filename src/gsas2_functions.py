@@ -742,6 +742,15 @@ class Refiner:
         if self.verbose:
             print('\nInstrument parameters %s are refined: Rwp=%.3f (was %.3f)\n '%(inst_pars_to_refine,rwp_new,rwp_old))
             
+    def reset_verbose(self, verbose=True):
+        """
+        Reset the self.verbose variable for future uses.
+
+        Args:
+            verbose (boolean): value to set self.verbose to. Defaults to True.
+        """
+        self.verbose = verbose        
+    
 class seqRefiner:
 
     def __init__(self,
@@ -1054,13 +1063,13 @@ class seqRefiner:
             Rwp, GOF = self.gpx.data['Sequential results']['data']['PWDR data.xy']['Rvals']['Rwp'], self.gpx.data['Sequential results']['data']['PWDR data.xy']['Rvals']['GOF']
         return Rwp, GOF
 
-    def plot_one(self, plt_range=None, i=0, clearplt=False):
+    def plot_one(self, index=0, plt_range=None, clearplt=False):
         """
         Method for plotting just one of the fits, after sequential refinement. Plots the cake pattern (reorganized detector image where the radial direction is on the xaxis) on the top, followed by the observed and calculated intensity vs 2theta plot, followed by theoretical diffraction peaks from the cif file, followed by the difference between the calculated and observed intensities. 
         
         Args:
             plt_range (int array): tuple (array of length 2) storing (min, max) for the plotting range
-            i (int): index of the file array to be plotted
+            index (int): index of the file array to be plotted
             clearplt (boolean): toggle for clearing the plots; useful if using something like %matplotlib widget in jupyter nb, and plots are being overwritted by other plots, which is an occasional glitch. Note, when true this will allow just one plot to be shown in the document at once, but with no overwritting.
         """
         if clearplt:
@@ -1094,23 +1103,23 @@ class seqRefiner:
         # plot the cake pattern in subplot 1 from the top
         ax = ax_dict["R"]
         
-        da_i2d = self.ds_list[i].i2d.sel(radial=slice(self.q_range[0],self.q_range[1])).astype('float32')
+        da_i2d = self.ds_list[index].i2d.sel(radial=slice(self.q_range[0],self.q_range[1])).astype('float32')
         da_i2d_m = da_i2d.mean(dim='azimuthal')
 
         np.log(da_i2d).plot.imshow(ax=ax,robust=True,add_colorbar=False,cmap='Greys',vmin=0)
-        ax.set_ylabel(self.ds_list[i].i2d.ylabel)
+        ax.set_ylabel(self.ds_list[index].i2d.ylabel)
         ax.set_xlabel(None)
         ax.set_xlim([plt_range[0],plt_range[1]])
-        if not i == 0:
-            Rwp, GoF = self.gpx.data['Sequential results']['data']['PWDR data.xy_'+str(i)]['Rvals']['Rwp'], self.gpx.data['Sequential results']['data']['PWDR data.xy_'+str(i)]['Rvals']['GOF']
+        if not index == 0:
+            Rwp, GoF = self.gpx.data['Sequential results']['data']['PWDR data.xy_'+str(index)]['Rvals']['Rwp'], self.gpx.data['Sequential results']['data']['PWDR data.xy_'+str(index)]['Rvals']['GOF']
         else:
             Rwp, GoF = self.gpx.data['Sequential results']['data']['PWDR data.xy']['Rvals']['Rwp'], self.gpx.data['Sequential results']['data']['PWDR data.xy']['Rvals']['GOF']
-        ax.set_title('%s\n(R$_{wp}$=%.3f GoF=%.3f, Temp(C)=%s)'%(self.names[i].split('/')[-1],Rwp,GoF, self.ds_list[i].attrs['HAB_temperature']))
+        ax.set_title('%s\n(R$_{wp}$=%.3f GoF=%.3f, Temp(C)=%s)'%(self.names[index].split('/')[-1],Rwp,GoF, self.ds_list[index].attrs['HAB_temperature']))
         ax.set_facecolor('#FFFED4')
 
         # plot observed and calculated I vs 2Theta in subplot 2 from the top
         ax = ax_dict["Y"]
-        X, Yobs, Ycalc, Ybkg=  self.ds_list[i]['X_in_q'].values,  self.ds_list[i]['Y_obs'].values,  self.ds_list[i]['Y_calc'].values, ( self.ds_list[i]['Y_bkg_auto']+ self.ds_list[i]['Y_bkg_gsas']).values
+        X, Yobs, Ycalc, Ybkg=  self.ds_list[index]['X_in_q'].values,  self.ds_list[index]['Y_obs'].values,  self.ds_list[index]['Y_calc'].values, ( self.ds_list[index]['Y_bkg_auto']+ self.ds_list[index]['Y_bkg_gsas']).values
         ax.plot(X, np.log( Yobs ),label='Y$_{obs}$',lw=2,color='k')
         ax.plot(X, np.log( Ycalc+Ybkg ),label='Y$_{calc}$+Y$_{bkg}$',lw=1,color='y')
         ax.fill_between(X, np.log( Ybkg ),label='Y$_{bkg}$',alpha=0.2)
@@ -1136,8 +1145,7 @@ class seqRefiner:
         from matplotlib.lines import Line2D
         custom_handles = []
         for i in np.arange(0,phase_ct,1):
-            custom_handles.append(Line2D([0], [0], marker='o',color=label_colors[i], label='Scatter',
-                          markerfacecolor=label_colors[i], markersize=5))
+            custom_handles.append(Line2D([0], [0], marker='o',color=label_colors[i], label='Scatter', markerfacecolor=label_colors[i], markersize=5))
 
         # get set legend handles from the plot and set legend with all handles and labels
         handles, labels = ax.get_legend_handles_labels()
@@ -1351,16 +1359,20 @@ class seqRefiner:
             return [i2dim], yobs, yfit, diff
 
         frames = len(filenames)
-        interval = 100   
+        interval = 100  
+        
+        from random import randint
+        filename = 'sequential_ref' + str(randint(0, 9999)) + '.gif'
+        
         from matplotlib.animation import FuncAnimation
         from tqdm import tqdm
         with tqdm(total=frames) as progress_bar:
             ani = FuncAnimation(fig, update, frames=frames, interval=interval)
 
             # Save the animation as a GIF
-            from random import randint
-            ani.save('sequential_ref' + str(randint(0, 9999)) + '.gif', writer='pillow')
-
+            ani.save(filename, writer='pillow')
+        if self.verbose:
+            print("Gif saved as", filename, "in", os.getcwd())
         plt.show()
     
     def plot_corr_matrix(self, clearplt=False):
@@ -1681,3 +1693,11 @@ class seqRefiner:
             except:
                 print('\n\n\nSize broadening is refined: Rwp=%.3f'%(rwp_new))
                 print('Parameters', inst_pars_to_refine, 'were refined.\n\n\n')
+    def reset_verbose(self, verbose=True):
+        """
+        Reset the self.verbose variable for future uses.
+
+        Args:
+            verbose (boolean): value to set self.verbose to. Defaults to True.
+        """
+        self.verbose = verbose
